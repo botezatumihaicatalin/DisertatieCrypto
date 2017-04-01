@@ -1,42 +1,65 @@
 import WebCamera from 'webcamjs'
 import ImageCrypto from 'chaotic-image-crypto/lib/bindings'
 
+const cameraRatio = 4/3;
+const cameraHeight = 480;
+const cameraWidth = cameraRatio * cameraHeight;
+
+WebCamera.set({
+  width: cameraWidth,
+  height: cameraHeight,
+  dest_width: cameraWidth,
+  dest_height: cameraHeight,
+});
+WebCamera.set('constraints', {
+  width: cameraWidth,
+  height: cameraHeight
+});
+
 WebCamera.attach('#camdemo');
+
+const canvasEncrypted = document.getElementById('encrypted')
+const contextEncrypted = canvasEncrypted.getContext('2d');
+canvasEncrypted.width = cameraWidth;
+canvasEncrypted.height = cameraHeight;
+
+const canvasDecrypted = document.getElementById('decrypted')
+const contextDecrypted = canvasDecrypted.getContext('2d');
+canvasDecrypted.width = cameraWidth;
+canvasDecrypted.height = cameraHeight;
+
+const video = document.querySelector('#camdemo > video')
 
 WebCamera.on('live', () => {
 
-  const canvasEncrypted = document.getElementById('encrypted')
-  const contextEncrypted = canvasEncrypted.getContext('2d');
-
-  const canvasDecrypted = document.getElementById('decrypted')
-  const contextDecrypted = canvasDecrypted.getContext('2d');
-
-  const pollInterval = 50
+  const pollInterval = 10
   const snap = () => {
-    WebCamera.snap((data_uri, canvas, context) => {
-      console.log(canvas.width, canvas.height)
-      const webcamImageData = context.getImageData(0, 0, canvas.width, canvas.height)
-      const webcamPixels = Uint8Array.from(webcamImageData.data)
-      // console.time('Encryption')
-      // const encryptedPixels = ImageCrypto.Encrypt(webcamPixels)
-      // console.timeEnd('Encryption')
 
-      // const encryptedImgData = contextEncrypted.getImageData(0, 0, canvas.width, canvas.height);
-      // encryptedImgData.data.set(encryptedPixels, 0)
-      // contextEncrypted.putImageData(encryptedImgData, 0, 0);
+    const webcamCanvas = document.createElement('canvas');
+    webcamCanvas.width = cameraWidth
+    webcamCanvas.height = cameraHeight
+    const webcamContext = webcamCanvas.getContext('2d');
+    webcamContext.drawImage(video, 0, 0, webcamCanvas.width, webcamCanvas.height)
+    const webcamImageData = webcamContext.getImageData(0, 0, webcamCanvas.width, webcamCanvas.height)
+    const webcamPixels = Uint8Array.from(webcamImageData.data)
 
-      // console.time('Decryption')
-      // const decryptedPixels = ImageCrypto.Decrypt(encryptedPixels)
-      // console.timeEnd('Decryption')
+    console.time('Encryption')
+    const encryptedPixels = ImageCrypto.Encrypt(webcamPixels)
+    console.timeEnd('Encryption')
 
-      contextDecrypted.drawImage(canvas, 0, 0)
+    const encryptedImgData = contextEncrypted.getImageData(0, 0, webcamCanvas.width, webcamCanvas.height);
+    encryptedImgData.data.set(encryptedPixels, 0)
+    contextEncrypted.putImageData(encryptedImgData, 0, 0);
 
-      // const decryptedImgData = contextEncrypted.getImageData(0, 0, canvas.width, canvas.height);
-      // decryptedImgData.data.set(webcamPixels, 0)
-      // contextDecrypted.putImageData(decryptedImgData, 0, 0);
+    console.time('Decryption')
+    const decryptedPixels = ImageCrypto.Decrypt(encryptedPixels)
+    console.timeEnd('Decryption')
 
-      setTimeout(snap, pollInterval);
-    })
+    const decryptedImgData = contextEncrypted.getImageData(0, 0, webcamCanvas.width, webcamCanvas.height);
+    decryptedImgData.data.set(webcamPixels, 0)
+    contextDecrypted.putImageData(decryptedImgData, 0, 0);
+
+    setTimeout(snap, pollInterval);
   }
 
   snap();
