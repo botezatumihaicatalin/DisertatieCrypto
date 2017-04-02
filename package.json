@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "build": "node ./node_modules/webpack/bin/webpack.js --minimize",
-    "start": "node ./build/bundle.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/botezatumihaicatalin/ChaoticImageCryptography.git"
@@ -18,17 +14,19 @@
   },
   "homepage": "https://github.com/botezatumihaicatalin/ChaoticImageCryptography#readme",
   "dependencies": {
+    "chaotic-image-crypto": "git+https://440ed297c8a0cbd64570245e4da6fc83d78d6825:x-oauth-basic@github.com/botezatumihaicatalin/ChaoticImageCrypto.git",
+    "webcamjs": "^1.0.22"
+  },
+  "devDependencies": {
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
     "babel-preset-env": "^1.1.4",
-    "chaotic-image-crypto": "git+https://440ed297c8a0cbd64570245e4da6fc83d78d6825:x-oauth-basic@github.com/botezatumihaicatalin/ChaoticImageCrypto.git",
-    "jpeg-camera": "git+https://github.com/amw/jpeg_camera.git",
-    "json-loader": "^0.5.4",
-    "webcamjs": "^1.0.22",
-    "webpack": "^1.14.0"
-  },
-  "devDependencies": {
+    "gulp-electron-downloader": "^0.1.6",
     "html-webpack-plugin": "^2.28.0",
-    "node-loader": "^0.6.0"
+    "json-loader": "^0.5.4",
+    "node-loader": "^0.6.0",
+    "shelljs": "^0.7.7",
+    "webpack": "^1.14.0",
+    "gulp-util": "^3.0.8",
   }
 }
