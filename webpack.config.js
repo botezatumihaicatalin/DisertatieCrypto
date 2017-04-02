@@ -18,6 +18,11 @@ module.exports = {
   resolve: {
     extensions: [ '', '.js', '.js6' ]
   },
+  resolveLoader: {
+    alias: {
+      'node-loader': path.join(__dirname, 'node_modules', 'node-loader')
+    }
+  },
   target: 'electron',
   node: {
     __dirname: false,
