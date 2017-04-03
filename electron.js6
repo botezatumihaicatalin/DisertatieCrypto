@@ -61,30 +61,28 @@ export default class Electron {
     return new Promise((resolve, reject) => {
       const options = {
         version: 'v' + constants.electronVersion,
-        arch: constants.targetArch,
         cacheDir: constants.electronCache,
         outputDir: constants.electronBinaries,
+        arch: constants.arch,
       }
 
       electronDownloader(options, (err) => {
-        if (err) {
-          reject(err)
-          return
-        }
-
-        resolve()
+        err ? reject(err) : resolve()
       })
     })
   }
 
   static rebuildNative(modulePath) {
-    const spawnCommand = 'node-gyp'
+    let spawnCommand = 'node-gyp'
+    if (constants.platform === 'win32') {
+      spawnCommand = 'node-gyp.cmd'
+    }
     const spawnArgs = [
       'rebuild',
       `--target=${constants.electronVersion}`,
-      `--arch=${constants.targetArch}`,
-      `--abi=${process.versions.modules}`,
-      `--dist-url=https://atom.io/download/electron`
+      `--arch=${constants.arch}`,
+      `--abi=${constants.abiVersion}`,
+      `--dist-url=${constants.distUrl}`
     ]
     const spawnOptions = {
       stdio: [ 'ignore', 'inherit', 'inherit' ],
@@ -104,8 +102,8 @@ export default class Electron {
     let options = {
       version:     constants.electronVersion,
       dir:         process.cwd(),
-      platform:    os.platform(),
-      arch:        constants.targetArch,
+      platform:    constants.platform,
+      arch:        constants.arch,
       overwrite:    true,
       'link-app':  !pack,
       asar:        !!pack,

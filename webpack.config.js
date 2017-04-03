@@ -53,7 +53,8 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'index.ejs',
       inject: 'body',
-      title: 'Webpage'
+      title: 'Webpage',
+      chunks: [ 'main' ]
     })
   ]
 }

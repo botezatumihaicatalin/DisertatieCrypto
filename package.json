@@ -22,6 +22,7 @@
     "babel-loader": "^6.2.10",
     "babel-preset-env": "^1.1.4",
     "babel-register": "^6.24.0",
+    "electron-packager": "^8.6.0",
     "gulp": "^3.9.1",
     "gulp-electron-downloader": "^0.1.6",
     "gulp-util": "^3.0.8",

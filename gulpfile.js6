@@ -5,7 +5,7 @@ import electron from './electron'
 import webpackConfig from './webpack.config';
 import path from 'path';
 
-gulp.task("electron:build", function(callback) {
+gulp.task("build", function(callback) {
     // run webpack
     webpack(webpackConfig, function(err, stats) {
         if(err) {
@@ -16,15 +16,17 @@ gulp.task("electron:build", function(callback) {
     });
 });
 
-gulp.task('electron:download', () => {
+gulp.task('download:electron', () => {
   return electron.downloadElectron()
 })
 
-gulp.task('electron:run', () => {
+gulp.task('run', () => {
   return electron.runElectron({ })
 })
 
-gulp.task('electron:rebuild', () => {
+gulp.task('rebuild:native', [ 'rebuild:crypto' ]);
+
+gulp.task('rebuild:crypto', () => {
   const cryptoModulePath = path.join(__dirname, 'node_modules', 'chaotic-image-crypto')
   return electron.rebuildNative(cryptoModulePath)
-})
+});
