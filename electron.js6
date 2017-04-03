@@ -77,6 +77,29 @@ export default class Electron {
     })
   }
 
+  static rebuildNative(modulePath) {
+    const spawnCommand = 'node-gyp'
+    const spawnArgs = [
+      'rebuild',
+      `--target=${constants.electronVersion}`,
+      `--arch=${constants.targetArch}`,
+      `--abi=${process.versions.modules}`,
+      `--dist-url=https://atom.io/download/electron`
+    ]
+    const spawnOptions = {
+      stdio: [ 'ignore', 'inherit', 'inherit' ],
+      cwd: modulePath
+    }
+
+    return new Promise((resolve, reject) => {
+      const childProcess = spawn(spawnCommand, spawnArgs, spawnOptions)
+      childProcess.on('close', (code, signal) => {
+        childProcess.removeAllListeners()
+        code ? reject(code) : resolve()
+      })
+    })
+  }
+
   static brandElectron() {
     let options = {
       version:     constants.electronVersion,
