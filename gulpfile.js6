@@ -1,0 +1,24 @@
+import gulp from 'gulp';
+import gutil from 'gulp-util';
+import webpack from 'webpack';
+import electron from './electron'
+import webpackConfig from './webpack.config';
+
+gulp.task("electron:build", function(callback) {
+    // run webpack
+    webpack(webpackConfig, function(err, stats) {
+        if(err) {
+          throw new gutil.PluginError("webpack", err);
+        }
+        gutil.log("[webpack]", stats.toString());
+        callback();
+    });
+});
+
+gulp.task('electron:download', () => {
+  return electron.downloadElectron()
+})
+
+gulp.task('electron:run', () => {
+  return electron.runElectron({ })
+})

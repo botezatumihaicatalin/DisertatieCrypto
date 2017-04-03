@@ -1,18 +1,18 @@
 {
-  "name": "chaotic-image-cryptograpy",
+  "name": "disertatie-crypto",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "build/bootstrap.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/botezatumihaicatalin/ChaoticImageCryptography.git"
+    "url": "git+https://github.com/botezatumihaicatalin/DisertatieCrypto.git"
   },
   "author": "Botezatu Mihai Catalin",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/botezatumihaicatalin/ChaoticImageCryptography/issues"
+    "url": "https://github.com/botezatumihaicatalin/DisertatieCrypto/issues"
   },
-  "homepage": "https://github.com/botezatumihaicatalin/ChaoticImageCryptography#readme",
+  "homepage": "https://github.com/botezatumihaicatalin/DisertatieCrypto#readme",
   "dependencies": {
     "chaotic-image-crypto": "git+https://440ed297c8a0cbd64570245e4da6fc83d78d6825:x-oauth-basic@github.com/botezatumihaicatalin/ChaoticImageCrypto.git",
     "webcamjs": "^1.0.22"
@@ -21,12 +21,14 @@
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
     "babel-preset-env": "^1.1.4",
+    "babel-register": "^6.24.0",
+    "gulp": "^3.9.1",
     "gulp-electron-downloader": "^0.1.6",
+    "gulp-util": "^3.0.8",
     "html-webpack-plugin": "^2.28.0",
     "json-loader": "^0.5.4",
     "node-loader": "^0.6.0",
     "shelljs": "^0.7.7",
-    "webpack": "^1.14.0",
-    "gulp-util": "^3.0.8",
+    "webpack": "^1.14.0"
   }
 }

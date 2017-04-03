@@ -1,0 +1,103 @@
+import path from 'path';
+import os from 'os'
+import fs from 'fs'
+import { spawn } from 'child_process';
+
+import electronDownloader from 'gulp-electron-downloader';
+import electronPackager from 'electron-packager';
+
+import constants from './constants';
+import packageJson from './package.json';
+
+export default class Electron {
+
+  static runElectron(options) {
+    const electronArgs = [ ]
+    if (options) {
+      if (options.debugPort) {
+        electronArgs.push('--debug', options.debugPort)
+      }
+      if (options.logging) {
+        electronArgs.push('--enable-logging')
+      }
+      if (options['dev-tools']) {
+        electronArgs.push('--dev-tools')
+      }
+    }
+
+    const spawnCommand = constants.electronBinary
+    const spawnOptions = {
+      stdio: [ 'ignore', 'inherit', 'inherit' ],
+      cwd: path.dirname(constants.electronBinary)
+    }
+    const spawnArgs = [
+      path.join(process.cwd(), 'build', 'bootstrap.js'),
+      ...electronArgs
+    ]
+
+    return new Promise((resolve, reject) => {
+      console.log(`[RUN:APP] Running ${spawnCommand} ${spawnArgs}`)
+
+      const childProcess = spawn(spawnCommand, spawnArgs, spawnOptions)
+
+      childProcess.on('close', (code, signal) => {
+        console.log('[RUN:APP] Electron closed with ' + code)
+        childProcess.removeAllListeners()
+        if (code == 0) {
+          resolve()
+        }
+        else {
+          reject(code)
+        }
+      })
+
+      childProcess.on('error', (err) => {
+        console.log('[RUN:APP] Electron error ' + err)
+      })
+    })
+  }
+
+  static downloadElectron() {
+    return new Promise((resolve, reject) => {
+      const options = {
+        version: 'v' + constants.electronVersion,
+        arch: constants.targetArch,
+        cacheDir: constants.electronCache,
+        outputDir: constants.electronBinaries,
+      }
+
+      electronDownloader(options, (err) => {
+        if (err) {
+          reject(err)
+          return
+        }
+
+        resolve()
+      })
+    })
+  }
+
+  static brandElectron() {
+    let options = {
+      version:     constants.electronVersion,
+      dir:         process.cwd(),
+      platform:    os.platform(),
+      arch:        constants.targetArch,
+      overwrite:    true,
+      'link-app':  !pack,
+      asar:        !!pack,
+      out:         path.join(process.cwd(), 'releases'),
+      prune:       false
+    }
+
+    return new Promise((resolve, reject) => {
+      electronPackager(options, (err, path) => {
+        if (err) {
+          reject(err)
+          return
+        }
+        resolve()
+      })
+    })
+  }
+}
