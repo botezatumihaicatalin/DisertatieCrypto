@@ -1,0 +1,6 @@
+import UsersController from './UsersController'
+
+import angular from 'angular'
+
+export default angular.module('main', [])
+  .controller('UsersController', UsersController)

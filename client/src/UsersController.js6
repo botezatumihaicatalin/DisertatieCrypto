@@ -1,0 +1,39 @@
+import IOServerService from './IOServerService'
+
+export default class UsersController {
+
+  constructor($scope) {
+    this.$scope = $scope
+
+    this.selected = null
+    this.users = [ ]
+    this.user = [ ]
+
+    IOServerService.getUserInfo(data => {
+      this.user = data, $scope.$apply()
+    })
+    IOServerService.getUsersInfo(data => {
+      this.setSelected(data[0].id)
+      this.users = data, $scope.$apply()
+    })
+
+    IOServerService.onUserUpdate(data => {
+      this.user = data, $scope.$apply()
+    })
+    IOServerService.onUsersUpdate(data => {
+      this.users = data, $scope.$apply()
+    })
+  }
+
+  setSelected(userId) {
+    IOServerService.requestStream(userId, () => {
+      this.selected = userId, this.$scope.$apply()
+    })
+  }
+
+  isSelected(userId) {
+    return this.selected === userId
+  }
+}
+
+UsersController.$inject = ['$scope']

@@ -1,60 +1,62 @@
-import io from 'socket.io-client'
+// import io from 'socket.io-client'
 
-function AppController($scope) {
-  $scope.users = [ ]
-  $scope.video = ''
-  $scope.broadcasting = false
+// function AppController($scope) {
+//   $scope.users = [ ]
+//   $scope.video = ''
+//   $scope.broadcasting = false
 
-  var socket = io('http://localhost:3000');
+//   var socket = io('http://localhost:3000');
 
-  var videoPicker = document.getElementById('video_picker');
-  var videoPlayer = document.getElementById('video_player');
-  var streamPreview = document.getElementById('stream_preview')
+//   var videoPicker = document.getElementById('video_picker');
+//   var videoPlayer = document.getElementById('video_player');
+//   var streamPreview = document.getElementById('stream_preview')
 
-  var canvas = document.createElement('canvas')
-  var context = canvas.getContext('2d');
+//   var canvas = document.createElement('canvas')
+//   var context = canvas.getContext('2d');
 
-  socket.on('users_data', function(data) {
-    console.log('Received users: ', data)
-    $scope.users = data, $scope.$apply();
-  })
+//   socket.on('users_data', function(data) {
+//     console.log('Received users: ', data)
+//     $scope.users = data, $scope.$apply();
+//   })
 
-  socket.on('connect', function(data) {
-    console.log('Connected to server!', data);
-  })
+//   socket.on('connect', function(data) {
+//     console.log('Connected to server!', data);
+//   })
 
-  socket.on('stream', function(data) {
-    streamPreview.src = data
-  })
+//   socket.on('stream', function(data) {
+//     streamPreview.src = data
+//   })
 
-  $scope.onInputChange = function() {
-    var videoFile = videoPicker.files[0];
-    var fileReader = new FileReader()
-    fileReader.addEventListener('load', () => {
-      videoPlayer.src = fileReader.result
-      canvas.width = videoPlayer.offsetWidth
-      canvas.height = videoPlayer.offsetHeight
-    })
+//   $scope.onInputChange = function() {
+//     var videoFile = videoPicker.files[0];
+//     var fileReader = new FileReader()
+//     fileReader.addEventListener('load', () => {
+//       videoPlayer.src = fileReader.result
+//       canvas.width = videoPlayer.offsetWidth
+//       canvas.height = videoPlayer.offsetHeight
+//     })
 
-    fileReader.readAsDataURL(videoFile)
-  }
+//     fileReader.readAsDataURL(videoFile)
+//   }
 
-  function sendSnapshot() {
-    context.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
-    socket.emit('stream', canvas.toDataURL('image/webp'));
-  }
+//   function sendSnapshot() {
+//     context.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
+//     socket.emit('stream', canvas.toDataURL('image/webp'));
+//   }
 
-  $scope.toggleBroadcast = function() {
-    const broadcasting = !$scope.broadcasting
-    if (broadcasting) {
-      $scope.interval = setInterval(sendSnapshot, 70);
-    }
-    else {
-      clearInterval($scope.interval)
-    }
-    $scope.broadcasting = broadcasting
-  }
-}
+//   $scope.toggleBroadcast = function() {
+//     const broadcasting = !$scope.broadcasting
+//     if (broadcasting) {
+//       $scope.interval = setInterval(sendSnapshot, 70);
+//     }
+//     else {
+//       clearInterval($scope.interval)
+//     }
+//     $scope.broadcasting = broadcasting
+//   }
+// }
 
-var home = angular.module('home',[]);
-home.controller('AppController', AppController)
+// var home = angular.module('home',[]);
+// home.controller('AppController', AppController)
+
+import MainModule from './MainModule'

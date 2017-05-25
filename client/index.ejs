@@ -25,21 +25,26 @@
         width: 200px;
       }
 
-    </style>
+      #users_container .active {
+        background: red;
+      }
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    </style>
   </head>
-  <body ng-app="home">
-    <div id='main_container' ng-controller="AppController">
+  <body ng-app="main">
+    <div id='main_container'>
       <div id='content_container'>
-        <input type="file" onchange="angular.element(this).scope().onInputChange()" id='video_picker'/>
+        <!-- <input type="file" onchange="angular.element(this).scope().onInputChange()" id='video_picker'/>
         <button ng-click="toggleBroadcast()"> {{ broadcasting ? 'End' : 'Begin' }} broadcast </button>
         <video controls width='100%' id='video_player'></video>
-        <img width="100%" id='stream_preview'></img>
+        <img width="100%" id='stream_preview'></img> -->
       </div>
-      <div id='users_container'>
+      <div id='users_container' ng-controller="UsersController as usersController">
         <h4 class='title'> Active users </h4>
-        <div ng-repeat="user in users" ng-attr-id="{{ user.id }}">
+        <div ng-repeat="user in usersController.users"
+             ng-attr-id="{{ user.id }}"
+             ng-click="usersController.setSelected(user.id)"
+             ng-class="{ 'active': usersController.isSelected(user.id) }">
           {{ user.name }}
         </div>
       </div>

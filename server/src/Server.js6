@@ -34,8 +34,16 @@ io.on('connection', (socket) => {
 		fn(users.toJSON())
 	})
 
+	socket.on('user_data', (fn) => {
+		fn(newUser.toJSON())
+	})
+
 	socket.on('stream', data => {
 		socket.broadcast.emit('stream', data)
+	})
+
+	socket.on('user_stream', (fn) => {
+		fn()
 	})
 
 	socket.on('disconnect', () => {

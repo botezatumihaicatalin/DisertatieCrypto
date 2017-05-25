@@ -1,0 +1,36 @@
+import io from 'socket.io-client'
+
+class IOServerService {
+
+  constructor() {
+    this.socket = io('http://localhost:3000');
+    this.isConnected = false;
+
+    this.socket.on('connect', () => {
+      console.log('Connected to server!');
+      this.isConnected = true
+    })
+  }
+
+  onUserUpdate(callback) {
+    return this.socket.on('user_data', callback)
+  }
+
+  onUsersUpdate(callback) {
+    return this.socket.on('users_data', callback)
+  }
+
+  getUserInfo(callback) {
+    return this.socket.emit('user_data', callback)
+  }
+
+  getUsersInfo(callback) {
+    return this.socket.emit('users_data', callback)
+  }
+
+  requestStream(userId, callback) {
+    return this.socket.emit('user_stream', callback)
+  }
+}
+
+export default new IOServerService
