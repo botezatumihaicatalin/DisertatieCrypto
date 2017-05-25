@@ -14,8 +14,8 @@
   },
   "homepage": "https://github.com/botezatumihaicatalin/DisertatieCrypto#readme",
   "dependencies": {
-    "chaotic-image-crypto": "git+https://440ed297c8a0cbd64570245e4da6fc83d78d6825:x-oauth-basic@github.com/botezatumihaicatalin/ChaoticImageCrypto.git",
-    "webcamjs": "^1.0.22"
+    "chaotic-image-crypto": "https://github.com/botezatumihaicatalin/ChaoticImageCrypto.git",
+    "socket.io": "^2.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.21.0",

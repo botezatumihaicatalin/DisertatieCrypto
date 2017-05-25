@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+      #main_container {
+        position: fixed;
+        display: flex;
+        background: #e1e1e1;
+        flex-flow: row nowrap;
+        width: 100%;
+        height: 100%;
+      }
+
+      #content_container {
+        flex: 1;
+        background: #cdcdcd;
+      }
+
+      #users_container {
+        overflow: auto;
+        padding: 20px;
+        background: #ededed;
+        width: 200px;
+      }
+
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  </head>
+  <body ng-app="home">
+    <div id='main_container' ng-controller="AppController">
+      <div id='content_container'>
+        <input type="file" onchange="angular.element(this).scope().onInputChange()" id='video_picker'/>
+        <button ng-click="toggleBroadcast()"> {{ broadcasting ? 'End' : 'Begin' }} broadcast </button>
+        <video controls width='100%' id='video_player'></video>
+        <img width="100%" id='stream_preview'></img>
+      </div>
+      <div id='users_container'>
+        <h4 class='title'> Active users </h4>
+        <div ng-repeat="user in users" ng-attr-id="{{ user.id }}">
+          {{ user.name }}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

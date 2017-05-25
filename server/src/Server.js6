@@ -1,0 +1,46 @@
+import http from 'http'
+import SocketServer from 'socket.io'
+
+import User from './User'
+import UsersPool from './UsersPool'
+
+const httpServer = http.createServer();
+const io = new SocketServer(httpServer, { serveClient: false });
+
+const port = process.env.PORT || 3000;
+httpServer.listen(port, () => {
+	console.log('server listening on port ' + port)
+});
+
+const users = new UsersPool();
+
+io.on('connection', (socket) => {
+
+	const newUser = users.fromSocket(socket);
+
+	socket.emit('user_data', newUser.toJSON());
+	socket.emit('users_data', users.toJSON());
+	socket.broadcast.emit('users_data', users.toJSON());
+
+	socket.on('get_user_data', (fn) => {
+		fn(newUser.toJSON())
+	})
+
+	socket.on('set_name', (name, fn) => {
+		newUser.name = name, fn(newUser.toJSON())
+	})
+
+	socket.on('users_data', (fn) => {
+		fn(users.toJSON())
+	})
+
+	socket.on('stream', data => {
+		socket.broadcast.emit('stream', data)
+	})
+
+	socket.on('disconnect', () => {
+		users.delete(newUser.id);
+		socket.broadcast.emit('users_data', users.toJSON())
+	})
+});
+

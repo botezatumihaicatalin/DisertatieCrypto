@@ -1,0 +1,42 @@
+import User from './User'
+
+export default class UsersPool {
+
+	constructor() {
+		this.usersMap = { }
+	}
+
+	add(user) {
+		this.usersMap[user.id] = user
+	}
+
+	get(id) {
+		return this.usersMap[id]
+	}
+
+	has(id) {
+		return Boolean(this.usersMap[id])
+	}
+
+	delete(id) {
+		delete this.usersMap[id]
+	}
+
+	size() {
+		return Object.keys(this.usersMap).length
+	}
+
+	fromSocket(socket) {
+		const userName = 'User ' + this.size()
+		const newUser = new User(userName, socket);
+		return this.add(newUser), newUser
+	}
+
+	toJSON() {
+		const json = [ ]
+		for (var id in this.usersMap) {
+			json.push(this.usersMap[id].toJSON())
+		}
+		return json
+	}
+}
