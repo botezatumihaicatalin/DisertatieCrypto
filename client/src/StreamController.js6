@@ -50,6 +50,6 @@ export default class StreamController {
   }
 
   onStreamReceived(data) {
-    this.renderer.decryptDataInCanvas(data, this.streamPreview)
+    this.renderer.decryptDataURLInCanvas(data, this.streamPreview)
   }
 }
