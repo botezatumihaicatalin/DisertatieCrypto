@@ -1,0 +1,87 @@
+import { PwlcmSpicCipher3 } from 'chaotic-image-crypto/lib/bindings'
+import LzString from 'lz-string/libs/lz-string.min.js'
+
+export default class ElementRenderer {
+
+  constructor(options) {
+    this.width = options.width
+    this.height = options.height
+    this.format = options.format || 'image/png'
+
+    this.cipher = new PwlcmSpicCipher3();
+    this.cipher.initKey({ x1: 0.1567, y1: 0.3219, r1: 0.2, m1: 2015,
+                 x2: 0.4567, y2: 0.1111, r2: 0.3, m2: 2016, iv: 123456 })
+
+    this.canvas = document.createElement('canvas')
+    this.canvas.width = options.width
+    this.canvas.height = options.height
+    this.context = this.canvas.getContext('2d')
+  }
+
+  toRgbUint8ClampedArray(pixels) {
+    const pixelsSize = pixels.length
+    const imageSize  = Math.floor(pixelsSize / 4)
+    const outputPixels = new Uint8ClampedArray(imageSize * 3)
+    for (let idx = 0; idx < imageSize; idx++) {
+      for (let chan = 0; chan < 3; chan++) {
+        outputPixels[idx * 3 + chan] = pixels[idx * 4 + chan]
+      }
+    }
+    return outputPixels
+  }
+
+  toRgbaUint8ClampedArray(pixels) {
+    const pixelsSize = pixels.length
+    const imageSize  = Math.floor(pixelsSize / 3)
+    const outputPixels = new Uint8ClampedArray(imageSize * 4)
+    for (let idx = 0; idx < imageSize; idx++) {
+      for (let chan = 0; chan < 3; chan++) {
+        outputPixels[idx * 4 + chan] = pixels[idx * 3 + chan]
+      }
+      outputPixels[idx * 4 + 3] = 255;
+    }
+    return outputPixels
+  }
+
+  getEncryptedDataURL(element, callback) {
+    console.time('Process')
+
+    this.context.drawImage(element, 0, 0, this.width, this.height);
+    const imageData = this.context.getImageData(0, 0, this.width, this.height)
+    const rgbData = this.toRgbUint8ClampedArray(imageData.data);
+
+    const encrypted = this.cipher.encrypt(rgbData);
+    const rgbaEncrypted = this.toRgbaUint8ClampedArray(encrypted);
+
+    imageData.data.set(rgbaEncrypted)
+    this.context.putImageData(imageData, 0, 0);
+
+    callback(this.canvas.toDataURL('image/bmp'));
+    console.timeEnd('Process')
+    return;
+  }
+
+  decryptDataInCanvas(data, canvas, callback) {
+    var image = new Image()
+    image.onload = (data) => {
+      console.time('Decryption process')
+      const context = canvas.getContext('2d')
+      canvas.width = this.width, canvas.height = this.height
+
+      context.clearRect(0, 0, this.width, this.height)
+      context.drawImage(image, 0, 0, this.width, this.height)
+      const imageData = context.getImageData(0, 0, this.width, this.height)
+      const rgbData = this.toRgbUint8ClampedArray(imageData.data);
+
+      const decrypted = this.cipher.decrypt(rgbData);
+      const rgbaDecrypted = this.toRgbaUint8ClampedArray(decrypted);
+
+      imageData.data.set(rgbaDecrypted)
+      context.putImageData(imageData, 0, 0);
+      console.timeEnd('Decryption process')
+      callback && callback(canvas)
+    }
+    image.src = data
+    return;
+  }
+}

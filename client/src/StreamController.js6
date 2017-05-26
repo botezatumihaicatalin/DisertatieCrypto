@@ -1,0 +1,55 @@
+import IOServerService from './IOServerService'
+import ElementRenderer from './ElementRenderer'
+
+export default class StreamController {
+
+  constructor() {
+    this.videoPicker = document.getElementById('video_picker');
+    this.videoPlayer = document.getElementById('video_player');
+    this.streamPreview = document.getElementById('stream_preview');
+    this.streamContext = this.streamPreview.getContext('2d');
+    this.renderer = new ElementRenderer({ width: 320, height: 240 })
+
+    this.videoPicker.addEventListener('change',
+        event => this.handleVideoPicked(event))
+
+    IOServerService.onStreamReceived(data => {
+      return this.onStreamReceived(data)
+    })
+
+    this.broadcasting = false
+  }
+
+  handleVideoPicked(event) {
+    const videoFile = this.videoPicker.files[0];
+    const fileReader = new FileReader()
+
+    fileReader.addEventListener('load', () => {
+      this.videoPlayer.src = fileReader.result
+    })
+
+    fileReader.readAsDataURL(videoFile)
+  }
+
+  toggleBroadcast() {
+    const broadcasting = !this.broadcasting
+    if (broadcasting) {
+      // this.sendSnapshot()
+      this.interval = setInterval(() => this.sendSnapshot(), 100);
+    }
+    else {
+      clearInterval(this.interval)
+    }
+    this.broadcasting = broadcasting
+  }
+
+  sendSnapshot() {
+    this.renderer.getEncryptedDataURL(this.videoPlayer, (data) => {
+      IOServerService.sendStream(data);
+    })
+  }
+
+  onStreamReceived(data) {
+    this.renderer.decryptDataInCanvas(data, this.streamPreview)
+  }
+}

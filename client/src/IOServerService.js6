@@ -20,6 +20,10 @@ class IOServerService {
     return this.socket.on('users_data', callback)
   }
 
+  onStreamReceived(callback) {
+    return this.socket.on('stream', callback)
+  }
+
   getUserInfo(callback) {
     return this.socket.emit('user_data', callback)
   }
@@ -30,6 +34,10 @@ class IOServerService {
 
   requestStream(userId, callback) {
     return this.socket.emit('user_stream', callback)
+  }
+
+  sendStream(data) {
+    return this.socket.emit('stream', data)
   }
 }
 
