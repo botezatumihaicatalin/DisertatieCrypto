@@ -36,7 +36,7 @@ export default class ElementRenderer {
   }
 
   getEncryptedDataURL(element, callback) {
-    console.time('Process')
+    console.time('Encryption Process')
 
     const canvas = this._createAndDrawInCanvas(element)
     const context = canvas.getContext('2d')
@@ -51,14 +51,14 @@ export default class ElementRenderer {
 
     callback(canvas.toDataURL('image/bmp'));
 
-    console.timeEnd('Process')
+    console.timeEnd('Encryption Process')
   }
 
   decryptDataURLInCanvas(data, canvas, callback) {
     const image = new Image()
 
     image.onload = (data) => {
-      console.time('Process')
+      console.time('Decryption Process')
 
       const dCanvas = this._createAndDrawInCanvas(image)
       const dContext = dCanvas.getContext('2d')
@@ -75,7 +75,7 @@ export default class ElementRenderer {
       context.drawImage(dCanvas, 0, 0, canvas.width, canvas.height);
       if (callback) callback(canvas)
 
-      console.timeEnd('Process')
+      console.timeEnd('Decryption Process')
     }
 
     image.src = data

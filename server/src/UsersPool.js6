@@ -3,27 +3,27 @@ import User from './User'
 export default class UsersPool {
 
 	constructor() {
-		this.usersMap = { }
+		this.usersMap = new Map()
 	}
 
 	add(user) {
-		this.usersMap[user.id] = user
+		this.usersMap.set(user.id, user)
 	}
 
 	get(id) {
-		return this.usersMap[id]
+		return this.usersMap.get(id)
 	}
 
 	has(id) {
-		return Boolean(this.usersMap[id])
+		return this.usersMap.has(id)
 	}
 
 	delete(id) {
-		delete this.usersMap[id]
+		this.usersMap.delete(id)
 	}
 
 	size() {
-		return Object.keys(this.usersMap).length
+		return this.usersMap.size
 	}
 
 	fromSocket(socket) {
@@ -32,11 +32,12 @@ export default class UsersPool {
 		return this.add(newUser), newUser
 	}
 
+	toArray() {
+		return [ ...this.usersMap.values() ]
+	}
+
 	toJSON() {
-		const json = [ ]
-		for (var id in this.usersMap) {
-			json.push(this.usersMap[id].toJSON())
-		}
-		return json
+		const users = this.toArray()
+		return users.map(user => user.toJSON())
 	}
 }

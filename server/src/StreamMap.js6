@@ -1,0 +1,82 @@
+
+// Acts like a unidirectional graph
+export default class StreamMap {
+
+	constructor() {
+		this.outgoing = new Map() // outgoing edges
+		this.incoming = new Map() // incoming edges
+	}
+ 	
+ 	areLinked(src, dst) {
+ 		if (this.outgoing.has(src)) {
+ 			return this.outgoing.get(src).has(dst)
+ 		}
+ 		return false
+ 	}
+
+ 	link(src, dst) {
+ 		if (!this.outgoing.has(src)) {
+ 			this.outgoing.set(src, new Set)
+ 		}
+ 		if (!this.incoming.has(dst)) {
+ 			this.incoming.set(dst, new Set)
+ 		}
+
+ 		this.outgoing.get(src).add(dst)
+ 		this.incoming.get(dst).add(src)
+ 		return this
+ 	}
+
+ 	unlink(src, dst) {
+ 		if (this.outgoing.has(src)) {
+ 			this.outgoing.get(src).delete(dst)
+ 		}
+ 		if (this.incoming.has(dst)) {
+ 			this.incoming.get(dst).delete(src)
+ 		}
+ 		return this
+ 	}
+
+ 	incomingTo(node) {
+ 		if (this.incoming.has(node)) {
+ 			return [ ...this.incoming.get(node) ]
+ 		}
+ 		return [ ]
+ 	}
+
+ 	outgoingTo(node) {
+ 		if (this.outgoing.has(node)) {
+ 			return [ ...this.outgoing.get(node) ]
+ 		}
+ 		return [ ]
+ 	}
+
+ 	delete(node) {
+ 		const outgoing = this.outgoingTo(node)
+ 		const incoming = this.incomingTo(node)
+ 		outgoing.forEach(out => this.unlink(node, out))
+ 		incoming.forEach(inc => this.unlink(inc, node))
+ 		return this
+ 	}
+
+ 	unlinkIncoming(node) {
+ 		const nodes = this.incomingTo(node)
+ 		nodes.forEach(inc => this.unlink(inc, node))
+ 		return this
+ 	}
+
+ 	unlinkOutgoing(node) {
+ 		const nodes = this.outgoingTo(node)
+ 		nodes.forEach(out => this.unlink(node, out))
+ 		return this
+ 	}
+
+ 	// For debugging purposes
+ 	toJSON() {
+ 		let obj = Object.create(null);
+    for (let [k,v] of this.outgoing) {
+        obj[k] = [ ...v.values() ];
+    }
+    return obj;
+ 	}
+}

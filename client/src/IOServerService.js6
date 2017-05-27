@@ -25,15 +25,15 @@ class IOServerService {
   }
 
   getUserInfo(callback) {
-    return this.socket.emit('user_data', callback)
+    return this.socket.emit('get_user_data', callback)
   }
 
   getUsersInfo(callback) {
-    return this.socket.emit('users_data', callback)
+    return this.socket.emit('get_users_data', callback)
   }
 
   requestStream(userId, callback) {
-    return this.socket.emit('user_stream', callback)
+    return this.socket.emit('user_stream', userId, callback)
   }
 
   sendStream(data) {
