@@ -34,6 +34,10 @@ export default class UsersController {
   isSelected(userId) {
     return this.selected === userId
   }
+
+  isYourself(userId) {
+    return this.user.id === userId
+  }
 }
 
 UsersController.$inject = ['$scope']

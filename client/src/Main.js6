@@ -59,4 +59,6 @@
 // var home = angular.module('home',[]);
 // home.controller('AppController', AppController)
 
+import ApplicationCss from './Application.css'
+import MaterializeCss from 'materialize-css/dist/css/materialize.min.css'
 import MainModule from './MainModule'
