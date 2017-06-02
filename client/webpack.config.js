@@ -63,7 +63,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'index.ejs',
       inject: 'body',
-      title: 'Webpage',
+      title: 'Share It',
       chunks: [ 'main' ]
     })
   ]

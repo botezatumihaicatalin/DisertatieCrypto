@@ -1,5 +1,6 @@
 import { PwlcmSpicCipher3 } from 'chaotic-image-crypto/lib/bindings'
 import { toRgbUint8ClampedArray, toRgbaUint8ClampedArray } from './ArrayUtils'
+import base64js from 'base64-js'
 
 export default class ElementRenderer {
 
@@ -13,7 +14,7 @@ export default class ElementRenderer {
                  x2: 0.4567, y2: 0.1111, r2: 0.3, m2: 2016, iv: 123456 })
   }
 
-  _createCanvas(width, height) {
+  _createCanvas(width = this.width, height = this.height) {
     const canvas = document.createElement('canvas')
     canvas.width = width, canvas.height = height
     return canvas
@@ -26,8 +27,7 @@ export default class ElementRenderer {
     return canvas
   }
 
-  _getImageData(canvas) {
-    const context = canvas.getContext('2d')
+  _getImageData(context) {
     return context.getImageData(0, 0, this.width, this.height)
   }
 
@@ -39,45 +39,33 @@ export default class ElementRenderer {
     console.time('Encryption Process')
 
     const canvas = this._createAndDrawInCanvas(element)
-    const context = canvas.getContext('2d')
-    const imgData = context.getImageData(0, 0, this.width, this.height)
+    const imgData = this._getImageData(canvas.getContext('2d'))
+    const rgbPixels = toRgbUint8ClampedArray(imgData.data)
+    const rgbEncrypted = this.cipher.encrypt(rgbPixels)
 
-    const rgbPixels = toRgbUint8ClampedArray(imgData.data);
-    const rgbEncrypted = this.cipher.encrypt(rgbPixels);
-    const rgbaEncrypted = toRgbaUint8ClampedArray(rgbEncrypted);
-
-    imgData.data.set(rgbaEncrypted)
-    context.putImageData(imgData, 0, 0);
-
-    callback(canvas.toDataURL('image/bmp'));
+    callback(base64js.fromByteArray(rgbEncrypted));
 
     console.timeEnd('Encryption Process')
   }
 
   decryptDataURLInCanvas(data, canvas, callback) {
-    const image = new Image()
+    console.time('Decryption Process')
 
-    image.onload = (data) => {
-      console.time('Decryption Process')
+    const dCanvas = this._createCanvas()
+    const dContext = dCanvas.getContext('2d')
+    const dImageData = this._getImageData(dContext)
 
-      const dCanvas = this._createAndDrawInCanvas(image)
-      const dContext = dCanvas.getContext('2d')
-      const dImageData = dContext.getImageData(0, 0, this.width, this.height)
+    const rgbPixels = base64js.toByteArray(data)
+    const rgbDecrypted = this.cipher.decrypt(rgbPixels);
+    const rgbaDecrypted = toRgbaUint8ClampedArray(rgbDecrypted);
 
-      const rgbPixels =  toRgbUint8ClampedArray(dImageData.data);
-      const rgbDecrypted = this.cipher.decrypt(rgbPixels);
-      const rgbaDecrypted = toRgbaUint8ClampedArray(rgbDecrypted);
+    dImageData.data.set(rgbaDecrypted)
+    dContext.putImageData(dImageData, 0, 0)
 
-      dImageData.data.set(rgbaDecrypted)
-      dContext.putImageData(dImageData, 0, 0)
+    const context = canvas.getContext('2d')
+    context.drawImage(dCanvas, 0, 0, canvas.width, canvas.height);
+    if (callback) callback(canvas)
 
-      const context = canvas.getContext('2d')
-      context.drawImage(dCanvas, 0, 0, canvas.width, canvas.height);
-      if (callback) callback(canvas)
-
-      console.timeEnd('Decryption Process')
-    }
-
-    image.src = data
+    console.timeEnd('Decryption Process')
   }
 }
