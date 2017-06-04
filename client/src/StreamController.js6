@@ -1,17 +1,16 @@
+const { dialog } = require('electron').remote
+
 import IOServerService from './IOServerService'
 import ElementRenderer from './ElementRenderer'
+
 
 export default class StreamController {
 
   constructor() {
-    this.videoPicker = document.getElementById('video_picker');
     this.videoPlayer = document.getElementById('video_player');
     this.streamPreview = document.getElementById('stream_preview');
     this.streamContext = this.streamPreview.getContext('2d');
     this.renderer = new ElementRenderer({ width: 320, height: 240 })
-
-    this.videoPicker.addEventListener('change',
-        event => this.handleVideoPicked(event))
 
     IOServerService.onStreamReceived(data => {
       return this.onStreamReceived(data)
@@ -20,15 +19,20 @@ export default class StreamController {
     this.broadcasting = false
   }
 
-  handleVideoPicked(event) {
-    const videoFile = this.videoPicker.files[0];
-    const fileReader = new FileReader()
-
-    fileReader.addEventListener('load', () => {
-      this.videoPlayer.src = fileReader.result
+  chooseSourceVideo() {
+    const filePaths = dialog.showOpenDialog({
+      title: "Choose a video file",
+      properties: [
+        'openFile',
+      ],
+      filters: [
+        { name: 'Videos', extensions: ['mkv', 'avi', 'mp4', 'webm', 'ogv'] } ,
+        { name: 'All Files', extensions: ['*'] }
+      ]
     })
-
-    fileReader.readAsDataURL(videoFile)
+    if (filePaths && filePaths.length > 0) {
+      this.videoPath = filePaths[0]
+    }
   }
 
   toggleBroadcast() {

@@ -1,30 +1,41 @@
 <!doctype html>
 <html>
-<head>
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-  <title><%= htmlWebpackPlugin.options.title %></title>
-</head>
-<body ng-app="main">
-  <div id='main_container' class='grey lighten-4'>
-    <div id='content_container' ng-controller="StreamController as streamController">
-      <div id='controls_container' class='grey lighten-3 z-depth-1'>
-        <input type="file" id='video_picker'/>
-        <button class="waves-effect waves-light btn"
-                ng-click="streamController.toggleBroadcast()">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+  </head>
+  <body ng-app="main">
+    <div id='main_container' class='grey lighten-4'>
+      <div id='content_container' ng-controller="StreamController as streamController">
+        <div id='controls_container' class='grey lighten-3 z-depth-1'>
+          <div class="file-field input-field" id='video_picker' ng-click="streamController.chooseSourceVideo()">
+            <div class="btn waves-effect waves-light">
+              <span>Choose video</span>
+            </div>
+            <div class="file-path-wrapper">
+              <input placeholder="No video is selected"
+              id="video_path" type="text"
+              class="file-path validate"
+              ng-value="streamController.videoPath"
+              readonly>
+            </div>
+          </div>
+          <button class="waves-effect waves-light btn"
+          ng-click="streamController.toggleBroadcast()">
           {{ streamController.broadcasting ? 'End' : 'Begin' }} broadcast
-        </button>
+          </button>
+        </div>
+        <div id='preview_container'>
+          <canvas id='stream_preview'></canvas>
+        </div>
+        <div id='video_container'>
+        <video controls id='video_player' ng-src="{{ streamController.videoPath }}"></video>
       </div>
-      <div id='preview_container'>
-        <canvas id='stream_preview'></canvas>
-      </div>
-      <div id='video_container'>
-        <video controls id='video_player'></video>
-      </div>
-      </div>
-      <div id='users_container' ng-controller="UsersController as usersController" class='grey lighten-3 z-depth-1'>
-        <h5 class='title light center-align'> Active users </h5>
-        <div class='collection'>
-          <a ng-repeat="user in usersController.users"
+    </div>
+    <div id='users_container' ng-controller="UsersController as usersController" class='grey lighten-3 z-depth-1'>
+      <h5 class='title light center-align'> Active users </h5>
+      <div class='collection'>
+        <a ng-repeat="user in usersController.users"
           ng-attr-id="{{ user.id }}"
           ng-click="usersController.setSelected(user.id)"
           ng-class="{ 'active': usersController.isSelected(user.id) }"
