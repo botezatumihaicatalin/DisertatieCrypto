@@ -68,3 +68,10 @@
   width: 500px;
   margin-right: 30px;
 }
+
+#video_picker > .btn {
+  float: left;
+  height: 36px !important;
+  line-height: 36px !important;
+  margin-top: 7px;
+}
